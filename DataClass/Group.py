@@ -1,3 +1,3 @@
-class Schedule:
-    def __init__(self):
-        pass
+class Group:
+    def __init__(self, group_id: int, students_list: list):
+        self.id = id
