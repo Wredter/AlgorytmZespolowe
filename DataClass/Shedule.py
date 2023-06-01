@@ -83,7 +83,7 @@ class Schedule:
         for day_idx, day in enumerate(array):
             for hour_idx, hour in enumerate(day):
                 for GCtTR_idx, GCtTR in enumerate(hour):
-                    if not np.any(np.isnan(GCtTR), axis=0):
+                    if not np.any(np.isnan(GCtTR), axis=1):
                         temp_GCtTR = [get_groups()[int(GCtTR[0])], get_courses()[int(GCtTR[1])], {"id": int(GCtTR[2])},
                                       get_teachers()[int(GCtTR[3])], get_rooms()[int(GCtTR[4])]]
                         new_schedule.add_position(temp_GCtTR, all_days[day_idx], all_hours[hour_idx])
