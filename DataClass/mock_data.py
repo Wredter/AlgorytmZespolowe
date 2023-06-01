@@ -8,6 +8,24 @@ teachers = [
     {"id": 2,
      "courses": [3, 4, 5, 6],
      "name": "Kamil Drama"},
+    {"id": 3,
+     "courses": [0, 1, 2, 3],
+     "name": "Jan Mosiądz"},
+    {"id": 4,
+     "courses": [8, 7, 6, 5],
+     "name": "Marek K"},
+    {"id": 5,
+     "courses": [3, 4, 5, 6],
+     "name": "Kamil D"},
+    {"id": 6,
+     "courses": [0, 1, 2, 3],
+     "name": "Dariusz M"},
+    {"id": 7,
+     "courses": [8, 7, 6, 5],
+     "name": "Marek Ks"},
+    {"id": 8,
+     "courses": [3, 4, 5, 6],
+     "name": "Kamil Dr"},
 ]
 courses = [
     {"id": 0,
@@ -53,18 +71,18 @@ groups = [
     {"id": 2,
      "courses": [0, 1, 7, 3, 4, 5, 6],
      "name": "III"},
-    {"id": 3,
-     "courses": [0, 1, 2, 3, 4, 7, 6],
-     "name": "IV"},
-    {"id": 4,
-     "courses": [0, 1, 2, 3, 4, 5, 6],
-     "name": "V"},
-    {"id": 5,
-     "courses": [0, 1, 2, 8, 4, 5, 6],
-     "name": "VI"},
-    {"id": 6,
-     "courses": [0, 1, 2, 3, 4, 7, 8],
-     "name": "VI"}
+    # {"id": 3,
+    #  "courses": [0, 1, 2, 3, 4, 7, 6],
+    #  "name": "IV"},
+    # # {"id": 4,
+    # #  "courses": [0, 1, 2, 3, 4, 5, 6],
+    # #  "name": "V"},
+    # # {"id": 5,
+    # #  "courses": [0, 1, 2, 8, 4, 5, 6],
+    # #  "name": "VI"},
+    # # {"id": 6,
+    # #  "courses": [0, 1, 2, 3, 4, 7, 8],
+    # #  "name": "VI"}
 ]
 rooms = [
     {"id": 0,
@@ -79,7 +97,21 @@ rooms = [
     {"id": 3,
      "room_type": 1,
      "name": "206"},
+    {"id": 4,
+     "room_type": 0,
+     "name": "101"},
+    {"id": 5,
+     "room_type": 0,
+     "name": "102"},
+    {"id": 6,
+     "room_type": 1,
+     "name": "205"},
+    {"id": 7,
+     "room_type": 1,
+     "name": "206"},
 ]
+
+
 # room_types:
 # 0 = sala wykładowa
 # 1 = labolatorium_komputerowe
