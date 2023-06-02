@@ -10,6 +10,11 @@ from DataClass.mock_data import get_groups, get_teachers
 from Utils import count_rows_nan
 
 
+def generations_callback(ga_instance):
+    print("Generation:", ga_instance.generations_completed)
+    print("Best fitness value:", ga_instance.best_solution()[1])
+
+
 def fitness_func(my_ga_instance, solution: np.array, solution_idx):
     solution = solution.reshape((5, 6, len(get_groups()), 5))
     for day in solution:
@@ -50,7 +55,7 @@ def fitness_func(my_ga_instance, solution: np.array, solution_idx):
         teacher_gaps.append(gaps)
     g_gap = sum(group_gaps)
     t_gap = sum(teacher_gaps)
-    return (1 / (g_gap+1)) + (1 / (t_gap+1))
+    return (1 / (g_gap + 1)) + (1 / (t_gap + 1))
 
 
 def custom_swap_mutation(solution, ga_instance: pygad.GA):
@@ -86,10 +91,10 @@ def custom_crossover_function(parents, offspring_size, ga_instance):
 
 if __name__ == "__main__":
     my_generator = ScheduleGenerator()
-    num_initial_pop = 500
+    num_initial_pop = 1000
     pop = []
-    load_schedules = True
-    save_schedules = False
+    load_schedules = False
+    save_schedules = True
     current_time = datetime.now().strftime("%m_%d_%H_%M")
     schedules_to_load = "Saved_schedules/schedule_14_13.pkl"
     if load_schedules:
@@ -98,15 +103,16 @@ if __name__ == "__main__":
             pop = pickle.load(file)
     else:
         print("Generating schedules")
-        for _ in range(500):
+        for _ in range(num_initial_pop):
             schedule = my_generator.generate().schedule.to_numpy_array().flatten()
             pop.append(schedule)
+            print(f"Generated {_}/{num_initial_pop}")
     if save_schedules:
         print("Saving schedules")
         with open(f'Saved_schedules\\schedule_{current_time}.pkl', 'wb') as file:
             pickle.dump(pop, file)
 
-    num_generations = 75
+    num_generations = 100
     num_parents_mating = 4
     population_size = 30
     mutation_probability = 0.05
@@ -124,6 +130,7 @@ if __name__ == "__main__":
                            mutation_type=custom_swap_mutation,
                            mutation_probability=mutation_probability
                            )
+    ga_instance.callback_generations = generations_callback
     ga_instance.run()
     ga_instance.plot_fitness()
     solution, solution_fitness, solution_idx = ga_instance.best_solution()
