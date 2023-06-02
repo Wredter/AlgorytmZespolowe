@@ -1,3 +1,4 @@
+import copy
 import pickle
 from datetime import datetime
 
@@ -7,7 +8,7 @@ import yaml
 
 from DataClass.Shedule import ScheduleGenerator, Schedule
 from DataClass.mock_data import get_groups, get_teachers
-from Utils import count_rows_nan
+from Utils import count_rows_nan, get_courses_for_group
 
 
 def generations_callback(ga_instance):
@@ -33,7 +34,21 @@ def fitness_func(my_ga_instance, solution: np.array, solution_idx):
                 row_uniq = np.unique(row)
                 if row_uniq.shape[0] != row.shape[0]:
                     return 0
-
+    _GCT = copy.deepcopy(GCT)
+    for day in solution:
+        for hour in day:
+            mask = np.isnan(hour)
+            hour_no_nans = hour[~mask]
+            hour_no_nans = hour_no_nans.reshape((-1, 5))
+            rows_to_check = hour_no_nans[:, [0, 1, 2]]
+            for row in rows_to_check:
+                temp = [row[0], row[1], row[2]]
+                try:
+                    _GCT.remove(temp)
+                except ValueError:
+                    return 0
+    if not _GCT:
+        return 0
     # sprawdzamy parametry rozwiązania w pierwszej kolejności okienka
     group_gaps = []
     teacher_gaps = []
@@ -91,12 +106,13 @@ def custom_crossover_function(parents, offspring_size, ga_instance):
 
 if __name__ == "__main__":
     my_generator = ScheduleGenerator()
-    num_initial_pop = 1000
+    GCT = get_courses_for_group()
+    num_initial_pop = 100
     pop = []
-    load_schedules = False
-    save_schedules = True
+    load_schedules = True
+    save_schedules = False
     current_time = datetime.now().strftime("%m_%d_%H_%M")
-    schedules_to_load = "Saved_schedules/schedule_14_13.pkl"
+    schedules_to_load = "Saved_schedules/schedule_06_02_18_23.pkl"
     if load_schedules:
         print("Loading schedules")
         with open(schedules_to_load, 'rb') as file:
@@ -112,7 +128,7 @@ if __name__ == "__main__":
         with open(f'Saved_schedules\\schedule_{current_time}.pkl', 'wb') as file:
             pickle.dump(pop, file)
 
-    num_generations = 100
+    num_generations = 3000
     num_parents_mating = 4
     population_size = 30
     mutation_probability = 0.05
@@ -121,6 +137,7 @@ if __name__ == "__main__":
     keep_parents = 1
     print("Looking for best schedule")
     ga_instance = pygad.GA(num_generations=num_generations,
+                           stop_criteria=["reach_2.0", "saturate_500"],
                            num_parents_mating=num_parents_mating,
                            fitness_func=fitness_func,
                            initial_population=pop,
@@ -128,13 +145,14 @@ if __name__ == "__main__":
                            keep_parents=keep_parents,
                            crossover_type=custom_crossover_function,
                            mutation_type=custom_swap_mutation,
-                           mutation_probability=mutation_probability
+                           mutation_probability=mutation_probability,
+                           on_generation=generations_callback
                            )
-    ga_instance.callback_generations = generations_callback
     ga_instance.run()
     ga_instance.plot_fitness()
     solution, solution_fitness, solution_idx = ga_instance.best_solution()
     finall_schedule = Schedule.to_schedule(solution.reshape((5, 6, len(get_groups()), 5)))
-    with open(f'Saved_schedules\\finall_schedule_{current_time}.yaml', 'w') as file:
-        yaml.dump(finall_schedule.simple_schedule(), file, indent=3, sort_keys=False)
+    if solution_fitness != 0:
+        with open(f'Saved_schedules\\finall_schedule_{current_time}.yaml', 'w') as file:
+            yaml.dump(finall_schedule.simple_schedule(), file, indent=3, sort_keys=False)
     print("Fitness value of the best solution = {solution_fitness}".format(solution_fitness=solution_fitness))

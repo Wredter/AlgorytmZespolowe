@@ -1,5 +1,7 @@
 import numpy as np
 
+from DataClass.mock_data import get_groups, get_courses
+
 
 def count_rows_nan(array):
     start_idx = None
@@ -19,3 +21,13 @@ def count_rows_nan(array):
                     count += 1
         return count
     return 0
+
+
+def get_courses_for_group():
+    GCT = []
+    for group in get_groups():
+        for course in group["courses"]:
+            for type in get_courses()[course]["types"]:
+                _GCT = [group["id"], course, type]
+                GCT.append(_GCT)
+    return GCT
