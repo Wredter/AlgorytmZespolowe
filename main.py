@@ -47,7 +47,7 @@ def fitness_func(my_ga_instance, solution: np.array, solution_idx):
                     _GCT.remove(temp)
                 except ValueError:
                     return 0
-    if not _GCT:
+    if _GCT:
         return 0
     # sprawdzamy parametry rozwiązania w pierwszej kolejności okienka
     group_gaps = []
@@ -109,8 +109,7 @@ if __name__ == "__main__":
     GCT = get_courses_for_group()
     num_initial_pop = 100
     pop = []
-    load_schedules = True
-    save_schedules = False
+    load_schedules = False
     current_time = datetime.now().strftime("%m_%d_%H_%M")
     schedules_to_load = "Saved_schedules/schedule_06_02_18_23.pkl"
     if load_schedules:
@@ -121,9 +120,9 @@ if __name__ == "__main__":
         print("Generating schedules")
         for _ in range(num_initial_pop):
             schedule = my_generator.generate().schedule.to_numpy_array().flatten()
+            print(f"Fitness: {fitness_func(None, schedule, None)}")
             pop.append(schedule)
             print(f"Generated {_}/{num_initial_pop}")
-    if save_schedules:
         print("Saving schedules")
         with open(f'Saved_schedules\\schedule_{current_time}.pkl', 'wb') as file:
             pickle.dump(pop, file)
