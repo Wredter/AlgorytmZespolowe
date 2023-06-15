@@ -107,7 +107,7 @@ def custom_crossover_function(parents, offspring_size, ga_instance):
 if __name__ == "__main__":
     my_generator = ScheduleGenerator()
     GCT = get_courses_for_group()
-    num_initial_pop = 100
+    num_initial_pop = 200
     pop = []
     load_schedules = False
     current_time = datetime.now().strftime("%m_%d_%H_%M")
@@ -127,16 +127,15 @@ if __name__ == "__main__":
         with open(f'Saved_schedules\\schedule_{current_time}.pkl', 'wb') as file:
             pickle.dump(pop, file)
 
-    num_generations = 3000
+    num_generations = 2000
     num_parents_mating = 4
-    population_size = 30
     mutation_probability = 0.05
 
     parent_selection_type = "sss"
     keep_parents = 1
     print("Looking for best schedule")
     ga_instance = pygad.GA(num_generations=num_generations,
-                           stop_criteria=["reach_2.0", "saturate_500"],
+                           stop_criteria=["reach_2.0", "saturate_75"],
                            num_parents_mating=num_parents_mating,
                            fitness_func=fitness_func,
                            initial_population=pop,
@@ -152,6 +151,5 @@ if __name__ == "__main__":
     solution, solution_fitness, solution_idx = ga_instance.best_solution()
     finall_schedule = Schedule.to_schedule(solution.reshape((5, 6, len(get_groups()), 5)))
     if solution_fitness != 0:
-        with open(f'Saved_schedules\\finall_schedule_{current_time}.yaml', 'w') as file:
-            yaml.dump(finall_schedule.simple_schedule(), file, indent=3, sort_keys=False)
+        finall_schedule.save_simple_schedule_per_entity()
     print("Fitness value of the best solution = {solution_fitness}".format(solution_fitness=solution_fitness))

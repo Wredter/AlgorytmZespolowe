@@ -1,7 +1,10 @@
 import copy
+import os
 import random
+from datetime import datetime
 
 import numpy as np
+import yaml
 
 from DataClass.mock_data import get_groups, get_rooms, get_courses, get_teachers
 
@@ -115,6 +118,50 @@ class Schedule:
                     }
                     my_dict[day_key][hour_key].append(simple_element)
         return my_dict
+
+    def save_simple_schedule_per_entity(self):
+        np_schedule = self.to_numpy_array()
+        group_schedule = {}
+        teacher_schedule = {}
+        room_schedule = {}
+
+        current_time = datetime.now().strftime("%m_%d_%H_%M")
+        os.mkdir(f'Saved_schedules\\{current_time}_all_schedules')
+
+        for group in get_groups():
+            group_plan = np.copy(np_schedule)
+            group_plan[~(group_plan[:, :, :, 0] == group["id"])] = np.nan
+            group_schedule[group["name"]] = group_plan
+        for teacher in get_teachers():
+            teacher_plan = np.copy(np_schedule)
+            teacher_plan[~(teacher_plan[:, :, :, 3] == teacher["id"])] = np.nan
+            teacher_schedule[teacher["name"]] = teacher_plan
+        for room in get_rooms():
+            room_plan = np.copy(np_schedule)
+            room_plan[~(room_plan[:, :, :, 4] == room["id"])] = np.nan
+            room_schedule[room["name"]] = room_plan
+
+        for group_k in group_schedule:
+            schedule = Schedule.to_schedule(group_schedule[group_k])
+            simple_schedule = schedule.simple_schedule()
+            with open(f'Saved_schedules\\{current_time}_all_schedules\\group_{group_k}_schedule.yaml', "w") as file:
+                yaml.dump(simple_schedule, file, indent=3, sort_keys=False)
+        for teacher_k in teacher_schedule:
+            schedule = Schedule.to_schedule(teacher_schedule[teacher_k])
+            simple_schedule = schedule.simple_schedule()
+            with open(f'Saved_schedules\\{current_time}_all_schedules\\{teacher_k}_schedule.yaml', "w") as file:
+                yaml.dump(simple_schedule, file, indent=3, sort_keys=False)
+        for room_k in room_schedule:
+            schedule = Schedule.to_schedule(room_schedule[room_k])
+            simple_schedule = schedule.simple_schedule()
+            with open(f'Saved_schedules\\{current_time}_all_schedules\\{room_k}_schedule.yaml', "w") as file:
+                yaml.dump(simple_schedule, file, indent=3, sort_keys=False)
+
+        with open(f'Saved_schedules\\{current_time}_all_schedules\\master_schedule.yaml', 'w') as file:
+            yaml.dump(self.simple_schedule(), file, indent=3, sort_keys=False)
+
+
+
 
     @staticmethod
     def to_schedule(array: np.array):
