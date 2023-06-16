@@ -128,7 +128,7 @@ class Schedule:
             print("Coś poszło bardzo nie tak")
             return None
         current_time = datetime.now().strftime("%m_%d_%H_%M")
-        os.mkdir(f'Saved_schedules\\{current_time}_all_schedules')
+
 
         for group in get_groups():
             group_plan = np.copy(np_schedule)
@@ -146,6 +146,7 @@ class Schedule:
             folder = f'{current_time}_all_schedules'
         else:
             folder = f'{current_time}_all_schedules_random'
+        os.mkdir(f'Saved_schedules\\{folder}')
         for group_k in group_schedule:
             schedule = Schedule.to_schedule(group_schedule[group_k])
             simple_schedule = schedule.simple_schedule()
