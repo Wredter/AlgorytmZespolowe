@@ -123,7 +123,7 @@ if __name__ == "__main__":
             schedule = my_generator.generate().schedule.to_numpy_array()
             print(f"Fitness: {fitness_func(None, schedule, None)}")
             if fitness_func(None, schedule, None) != 0 and not saved:
-                Schedule.to_schedule(schedule).save_simple_schedule_per_entity()
+                Schedule.to_schedule(schedule).save_simple_schedule_per_entity(finall=False)
                 saved = True
             pop.append(schedule.flatten())
             print(f"Generated {_}/{num_initial_pop}")
