@@ -118,10 +118,14 @@ if __name__ == "__main__":
             pop = pickle.load(file)
     else:
         print("Generating schedules")
+        saved = False
         for _ in range(num_initial_pop):
-            schedule = my_generator.generate().schedule.to_numpy_array().flatten()
+            schedule = my_generator.generate().schedule.to_numpy_array()
             print(f"Fitness: {fitness_func(None, schedule, None)}")
-            pop.append(schedule)
+            if fitness_func(None, schedule, None) != 0 and not saved:
+                Schedule.to_schedule(schedule).save_simple_schedule_per_entity()
+                saved = True
+            pop.append(schedule.flatten())
             print(f"Generated {_}/{num_initial_pop}")
         print("Saving schedules")
         with open(f'Saved_schedules\\schedule_{current_time}.pkl', 'wb') as file:
