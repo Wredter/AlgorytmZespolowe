@@ -59,7 +59,7 @@ def fitness_func(my_ga_instance, solution: np.array, solution_idx):
         gaps = 0
         for day in group_plan:
             gaps += count_rows_nan(day)
-        group_gaps.append(gaps)
+        group_gaps.append(1/(gaps + 1))
     # policz okienka u wszystkich nauczycieli
     for teacher_idx, teacher in enumerate(get_teachers()):
         teacher_plan = np.copy(solution)
@@ -67,10 +67,10 @@ def fitness_func(my_ga_instance, solution: np.array, solution_idx):
         gaps = 0
         for day in teacher_plan:
             gaps += count_rows_nan(day)
-        teacher_gaps.append(gaps)
+        teacher_gaps.append(1/(gaps + 1))
     g_gap = sum(group_gaps)
     t_gap = sum(teacher_gaps)
-    return (1 / (g_gap + 1)) + (1 / (t_gap + 1))
+    return g_gap + t_gap
 
 
 def custom_swap_mutation(solution, ga_instance: pygad.GA):
@@ -137,9 +137,10 @@ if __name__ == "__main__":
 
     parent_selection_type = "sss"
     keep_parents = 1
+
     print("Looking for best schedule")
     ga_instance = pygad.GA(num_generations=num_generations,
-                           stop_criteria=["reach_2.0", "saturate_75"],
+                           stop_criteria=["reach_16.0", "saturate_75"],
                            num_parents_mating=num_parents_mating,
                            fitness_func=fitness_func,
                            initial_population=pop,
